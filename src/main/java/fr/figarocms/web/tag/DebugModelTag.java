@@ -23,7 +23,7 @@ public class DebugModelTag extends TagSupport {
     public static final String SCRIPT_END = "</script>";
 
     /**
-     *   Property -Ddebug.jsp = true à mettre dans les  variables de la JVM.
+     * Property -Ddebug.jsp = true à mettre dans les  variables de la JVM.
      */
     public static final String DEBUG_JSP_FLAG = "debug.jsp";
 
@@ -37,12 +37,13 @@ public class DebugModelTag extends TagSupport {
 
     public static final String STRING_CLASS_NAME = "java.lang.String";
 
-
     protected Map<String, Object> debugModel = Maps.newHashMap();
 
     protected Map<String, Object> debugSession = Maps.newHashMap();
 
     protected Map<String, Object> debugRequest = Maps.newHashMap();
+
+    protected Map<String, Object> debugApplication = Maps.newHashMap();
 
     @Override
     public int doStartTag() throws JspException {
@@ -52,8 +53,8 @@ public class DebugModelTag extends TagSupport {
 
             JspWriter out = pageContext.getOut();
 
-            List<Integer> pageContextScope = Lists
-                    .newArrayList(Arrays.asList(PageContext.SESSION_SCOPE, PageContext.REQUEST_SCOPE));
+            List<Integer> pageContextScope = Lists.newArrayList(
+                    Arrays.asList(PageContext.SESSION_SCOPE, PageContext.REQUEST_SCOPE, PageContext.APPLICATION_SCOPE));
 
             try {
                 out.println(SCRIPT_TYPE_TEXT_JAVASCRIPT_START);
@@ -63,18 +64,26 @@ public class DebugModelTag extends TagSupport {
                     while (attributeNames.hasMoreElements()) {
                         String element = attributeNames.nextElement().toString();
                         Object attribute;
-                        //@TODO: à refactorer : liste des packages non souhaité dans le web xml par exemple.
-                        if (element != null && !element.startsWith("__spring") && !element.startsWith("javax") &&
-                                !element.startsWith("org.") && !element.startsWith("com.")) {
+                        String packagesToExclude = pageContext.getServletContext()
+                                .getInitParameter("webdebug.excludes");
+                        List<String> tokenToFilter = Arrays.asList(packagesToExclude.split(","));
+
+                        if (element != null && ignoredPackage(element, tokenToFilter)) {
+
                             if (scope == PageContext.REQUEST_SCOPE) {
                                 attribute = pageContext.getRequest().getAttribute(element);
                                 if (attribute != null) {
                                     addAttributeToMap(element, attribute, debugRequest);
                                 }
-                            } else {
+                            } else if (scope == PageContext.SESSION_SCOPE) {
                                 attribute = pageContext.getSession().getAttribute(element);
                                 if (attribute != null) {
                                     addAttributeToMap(element, attribute, debugSession);
+                                }
+                            } else if (scope == PageContext.APPLICATION_SCOPE) {
+                                attribute = pageContext.getSession().getAttribute(element);
+                                if (attribute != null) {
+                                    addAttributeToMap(element, attribute, debugApplication);
                                 }
                             }
                         }
@@ -82,10 +91,11 @@ public class DebugModelTag extends TagSupport {
                 }
                 debugModel.put("session", debugSession);
                 debugModel.put("request", debugRequest);
+                debugModel.put("application", debugApplication);
                 ObjectMapper objectMapper = new ObjectMapper();
-                out.println(VAR + VAR_JS_ATTRIBUTE_VIEWER + " = " + objectMapper.writeValueAsString(debugModel).replaceAll(
-                        SINGLE_QUOTE, EMPTY) + ";");
-                out.println("console.debug("+VAR_JS_ATTRIBUTE_VIEWER+");");
+                out.println(VAR + VAR_JS_ATTRIBUTE_VIEWER + " = " +
+                        objectMapper.writeValueAsString(debugModel).replaceAll(SINGLE_QUOTE, EMPTY) + ";");
+                out.println("console.debug(" + VAR_JS_ATTRIBUTE_VIEWER + ");");
                 out.println(SCRIPT_END);
             } catch (IOException e) {
                 throw new JspException("IOException while writing data to page" + e.getMessage(), e);
@@ -93,6 +103,18 @@ public class DebugModelTag extends TagSupport {
         }
 
         return SKIP_BODY;
+    }
+
+    private boolean ignoredPackage(final String element, final List<String> tokenToFilter) {
+        boolean isIgnored = false;
+        for (String packageIgnored : tokenToFilter) {
+            if (isIgnored) {
+                return !isIgnored;
+            }
+            isIgnored = element.startsWith(packageIgnored);
+        }
+
+        return !isIgnored;
     }
 
     private void addAttributeToMap(final String element, final Object attribute, Map<String, Object> map) {
