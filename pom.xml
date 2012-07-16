@@ -27,7 +27,7 @@
 
 	<properties>
 		<!-- encoding -->
-		<project.build.sourceEncoding>ISO-8859-15</project.build.sourceEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<testSourceDirectory.path>src/test/java</testSourceDirectory.path>
 	</properties>
 
