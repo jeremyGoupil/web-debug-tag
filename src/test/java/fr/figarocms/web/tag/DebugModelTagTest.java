@@ -26,6 +26,7 @@ public class DebugModelTagTest {
         MockitoAnnotations.initMocks(this);
     }
 
+
     @Test
     public void testDoStartTag() throws Exception {
         MockHttpServletResponse response = new MockHttpServletResponse();
