@@ -23,7 +23,7 @@ public class DebugModelTag extends TagSupport {
     public static final String SCRIPT_END = "</script>";
 
     /**
-     * Property -Ddebug.jsp = true à mettre dans les  variables de la JVM.
+     * Property -Ddebug.jsp = true Ã  mettre dans les  variables de la JVM.
      */
     public static final String DEBUG_JSP_FLAG = "debug.jsp";
 
@@ -89,6 +89,7 @@ public class DebugModelTag extends TagSupport {
                         }
                     }
                 }
+
                 debugModel.put("session", debugSession);
                 debugModel.put("request", debugRequest);
                 debugModel.put("application", debugApplication);
