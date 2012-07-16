@@ -92,7 +92,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.9</version>
+			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -119,5 +119,20 @@
 			<version>2.0.4</version>
 		</dependency>
 	</dependencies>
+	<distributionManagement>
+			<repository>
+				<id>sonatype-oss-releases</id>
+				<name>Sonatype OSS Releases</name>
+				<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+			</repository>
+			<snapshotRepository>
+				<id>sonatype-oss-snapshots</id>
+				<uniqueVersion>true</uniqueVersion>
+				<name>Sonatype OSS Snapshots</name>
+				<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			</snapshotRepository>
+		</distributionManagement>
+
+
 
 </project>
