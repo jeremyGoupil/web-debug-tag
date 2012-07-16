@@ -6,7 +6,7 @@
 	<artifactId>web-debug-tag</artifactId>
 	<packaging>jar</packaging>
 	<description>Tag JSTL pour debugger les attributs de session et de request</description>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
 
 	<scm>
 		<connection>scm:git:@github.com:figarocms/web-debug-tag.git</connection>
