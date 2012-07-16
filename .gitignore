@@ -1,0 +1,7 @@
+*.idea -f
+*.iml
+*.ipr
+target
+*.project
+*.classpath
+*.svn
