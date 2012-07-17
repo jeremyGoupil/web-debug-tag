@@ -72,6 +72,7 @@
                 <version>1.4</version>
 				<configuration>
 					<secretKeyring>${project.basedir}/gpg/secring.gpg</secretKeyring>
+					<publicKeyring>${project.basedir}/gpg/pubring.gpg</publicKeyring>
 				</configuration>
                 <executions>
                     <execution>
