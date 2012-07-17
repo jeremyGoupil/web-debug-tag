@@ -6,7 +6,7 @@
 	<artifactId>web-debug-tag</artifactId>
 	<packaging>jar</packaging>
 	<description>Tag JSTL pour debugger les attributs de session et de request</description>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
