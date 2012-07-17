@@ -70,13 +70,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.4</version>
+				<configuration>
+					<secretKeyring>${build.directory}/gpg/secring.gpg</secretKeyring>
+				</configuration>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
                         <phase>verify</phase>
                         <goals>
                             <goal>sign</goal>
-                        </goals>
+                        </goals>	
                     </execution>
                 </executions>
             </plugin>
