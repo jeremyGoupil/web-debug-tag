@@ -71,7 +71,7 @@
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.4</version>
 				<configuration>
-					<secretKeyring>${build.directory}/gpg/secring.gpg</secretKeyring>
+					<secretKeyring>${project.basedir}/gpg/secring.gpg</secretKeyring>
 				</configuration>
                 <executions>
                     <execution>
