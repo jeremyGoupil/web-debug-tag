@@ -71,8 +71,8 @@
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.4</version>
 				<configuration>
-					<secretKeyring>${project.basedir}/gpg/secring.gpg</secretKeyring>
-					<publicKeyring>${project.basedir}/gpg/pubring.gpg</publicKeyring>
+					<secretKeyring>/home/jgoupil/jenkins_working_dir/workspace/Release-web-debug-tag/gpg/secring.gpg</secretKeyring>
+					<publicKeyring>/home/jgoupil/jenkins_working_dir/workspace/Release-web-debug-tag/gpg/pubring.gpg</publicKeyring>
 				</configuration>
                 <executions>
                     <execution>
