@@ -84,11 +84,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.4</version>
-				<configuration>
-					<secretKeyring>/home/jgoupil/jenkins_working_dir/workspace/Release-web-debug-tag/gpg/secring.gpg</secretKeyring>
-					<publicKeyring>/home/jgoupil/jenkins_working_dir/workspace/Release-web-debug-tag/gpg/pubring.gpg</publicKeyring>
-				</configuration>
-                <executions>
+				<executions>
                     <execution>
                         <id>sign-artifacts</id>
                         <phase>verify</phase>
