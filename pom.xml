@@ -11,7 +11,7 @@
 	<groupId>fr.figarocms</groupId>
 	<artifactId>web-debug-tag</artifactId>
 	<packaging>jar</packaging>
-	<description>Tag JSTL pour debugger les attributs de session et de request</description>
+	<description>Tag JSTL for debugging session and request attributes in firebug, developed and used at Figaro Classifieds</description>
 	<version>0.0.1-SNAPSHOT</version>
 	<licenses>
 		<license>
