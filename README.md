@@ -22,7 +22,7 @@ Tag dumping attributes of session, requests and application into console like fi
 
 ```
 
-- you can download it here => at https://oss.sonatype.org/ find web-debug-tag.
+- you can download it here  https://oss.sonatype.org/ find web-debug-tag.
 
 ```
 
