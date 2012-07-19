@@ -7,7 +7,7 @@ Tag dumping attributes of session, requests and application into console like fi
  
 ### MAVEN            
 
-'''
+```
 
 - Add dependency in your pom.xml : 
    <dependency>
@@ -16,19 +16,19 @@ Tag dumping attributes of session, requests and application into console like fi
       <version>0.0.2</version>
    </dependency>
 
-'''
+```
 
 ### FREESTYLE OR OTHER :
 
-'''
+```
 
 - you can download it here =>  https://oss.sonatype.org/ find web-debug-tag.
 
-'''
+```
 
 ### FILTER PARAM            
 
-'''
+```
 
 - Add in your web.xml, min 1 filter.
    <context-param>
@@ -37,27 +37,27 @@ Tag dumping attributes of session, requests and application into console like fi
    </context-param> 
   
 
-''' 
+``` 
 
 ### TOMCAT OR OTHER
 
-'''  
+```  
 
 - Add -Ddebug.jsp=true in "APPS-OPTS" of your setenv.sh.
 
-'''
+```
 
 ### IDE 
 
-'''
+```
 
 - Add -Ddebug.jsp=true in VM parameters of your Runner.
 
-'''
+```
 
 ### USAGE
           
-'''
+```
 - Add in jsp file you want to debug : 
       <%@ taglib prefix="debug" uri="https://github.com/figarocms/web-debug-tag"%>
       <debug:debugModel/>  
@@ -67,6 +67,6 @@ Tag dumping attributes of session, requests and application into console like fi
   - session
   - application
 
-'''              
+```              
     
 
