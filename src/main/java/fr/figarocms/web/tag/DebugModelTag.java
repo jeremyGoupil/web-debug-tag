@@ -10,9 +10,13 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.util.HtmlUtils;
 
 public class DebugModelTag extends TagSupport {
@@ -45,6 +49,7 @@ public class DebugModelTag extends TagSupport {
 
     protected Map<String, Object> debugApplication = Maps.newHashMap();
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DebugModelTag.class);
     @Override
     public int doStartTag() throws JspException {
         String debugJsp = System.getProperty(DEBUG_JSP_FLAG);
@@ -94,8 +99,15 @@ public class DebugModelTag extends TagSupport {
                 debugModel.put("request", debugRequest);
                 debugModel.put("application", debugApplication);
                 ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+                String debugModelAsJSON =null;
+                try{
+                 debugModelAsJSON = objectMapper.writeValueAsString(debugModel);
+                }catch(Throwable t){
+                    LOGGER.error("error in debugModel serialization in JSON",t);
+                }
                 out.println(VAR + VAR_JS_ATTRIBUTE_VIEWER + " = " +
-                        objectMapper.writeValueAsString(debugModel).replaceAll(SINGLE_QUOTE, EMPTY) + ";");
+                        Objects.firstNonNull(debugModelAsJSON,"null content").replaceAll(SINGLE_QUOTE, EMPTY) + ";");
                 out.println("console.debug(" + VAR_JS_ATTRIBUTE_VIEWER + ");");
                 out.println(SCRIPT_END);
             } catch (IOException e) {
