@@ -100,6 +100,7 @@ public class DebugModelTag extends TagSupport {
                 debugModel.put("application", debugApplication);
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
                 String debugModelAsJSON =null;
                 try{
                  debugModelAsJSON = objectMapper.writeValueAsString(debugModel);
@@ -107,7 +108,7 @@ public class DebugModelTag extends TagSupport {
                     LOGGER.error("error in debugModel serialization in JSON",t);
                 }
                 out.println(VAR + VAR_JS_ATTRIBUTE_VIEWER + " = " +
-                        Objects.firstNonNull(debugModelAsJSON,"null content").replaceAll(SINGLE_QUOTE, EMPTY) + ";");
+                        Objects.firstNonNull(debugModelAsJSON,"null").replaceAll(SINGLE_QUOTE, EMPTY) + ";");
                 out.println("console.debug(" + VAR_JS_ATTRIBUTE_VIEWER + ");");
                 out.println(SCRIPT_END);
             } catch (IOException e) {
