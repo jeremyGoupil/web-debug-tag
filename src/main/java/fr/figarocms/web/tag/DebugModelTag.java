@@ -109,7 +109,7 @@ public class DebugModelTag extends TagSupport {
                 }
                 out.println(VAR + VAR_JS_ATTRIBUTE_VIEWER + " = " +
                         Objects.firstNonNull(debugModelAsJSON,"null").replaceAll(SINGLE_QUOTE, EMPTY) + ";");
-                out.println("console.debug(" + VAR_JS_ATTRIBUTE_VIEWER + ");");
+                out.println("console.dir(" + VAR_JS_ATTRIBUTE_VIEWER + ");");
                 out.println(SCRIPT_END);
             } catch (IOException e) {
                 throw new JspException("IOException while writing data to page" + e.getMessage(), e);
