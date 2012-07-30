@@ -50,6 +50,7 @@ public class DebugModelTag extends TagSupport {
     protected Map<String, Object> debugApplication = Maps.newHashMap();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugModelTag.class);
+
     @Override
     public int doStartTag() throws JspException {
         String debugJsp = System.getProperty(DEBUG_JSP_FLAG);
