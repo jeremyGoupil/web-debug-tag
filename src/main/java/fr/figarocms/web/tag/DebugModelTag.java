@@ -50,6 +50,7 @@ public class DebugModelTag extends TagSupport {
     protected Map<String, Object> debugApplication = Maps.newHashMap();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugModelTag.class);
+
     @Override
     public int doStartTag() throws JspException {
         String debugJsp = System.getProperty(DEBUG_JSP_FLAG);
@@ -109,7 +110,7 @@ public class DebugModelTag extends TagSupport {
                 }
                 out.println(VAR + VAR_JS_ATTRIBUTE_VIEWER + " = " +
                         Objects.firstNonNull(debugModelAsJSON,"null").replaceAll(SINGLE_QUOTE, EMPTY) + ";");
-                out.println("console.dir(" + VAR_JS_ATTRIBUTE_VIEWER + ");");
+                out.println("(typeof console === \"undefined\")? {} : console.dir(" + VAR_JS_ATTRIBUTE_VIEWER + ");");
                 out.println(SCRIPT_END);
             } catch (IOException e) {
                 throw new JspException("IOException while writing data to page" + e.getMessage(), e);
