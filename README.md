@@ -13,7 +13,7 @@ Tag dumping attributes of session, requests and application into console like fi
    <dependency>
       <groupId>fr.figarocms</group>
       <artifactId>web-debug-tag</artifactId>
-      <version>0.0.2</version>
+      <version>0.0.16</version>
    </dependency>
 
 ```
