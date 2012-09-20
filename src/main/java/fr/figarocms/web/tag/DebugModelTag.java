@@ -1,5 +1,6 @@
 package fr.figarocms.web.tag;
 
+import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
@@ -41,53 +42,92 @@ public class DebugModelTag extends TagSupport {
 
     public static final String STRING_CLASS_NAME = "java.lang.String";
 
-    protected Map<String, Object> debugModel = Maps.newHashMap();
+    private static final String WEBDEBUG_EXCLUDES = "webdebug.excludes";
 
-    protected Map<String, Object> debugSession = Maps.newHashMap();
+    private static final String PAGE_REQUEST_KEY = "page";
 
-    protected Map<String, Object> debugRequest = Maps.newHashMap();
+    private static final String REQUEST_MODEL_KEY = "request";
 
-    protected Map<String, Object> debugApplication = Maps.newHashMap();
+    private static final String SESSION_MODEL_KEY = "session";
+
+    private static final String APPLICATION_MODEL_KEY = "application";
+
+    private static final String EXCLUDE_PACKAGE_SEPARATOR = ",";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugModelTag.class);
 
+    private static final String DEBUG_JVM_PARAMETER = System.getProperty(DEBUG_JSP_FLAG);
+
+
+    private static final boolean DEBUG_FLAG =
+            (DEBUG_JVM_PARAMETER != null) && Boolean.parseBoolean(DEBUG_JVM_PARAMETER);
+
+    private static final List<Integer> SCOPES = Lists.newArrayList(
+            Arrays.asList(PageContext.PAGE_SCOPE,PageContext.SESSION_SCOPE, PageContext.REQUEST_SCOPE, PageContext.APPLICATION_SCOPE));
+
+
+
+    private Map<String, Object> debugModel = Maps.newHashMap();
+
+    private Map<String, Object> debugSession = Maps.newHashMap();
+    private  Map<String, Object> debugRequest = Maps.newHashMap();
+
+    private  Map<String, Object> debugPage = Maps.newHashMap();
+
+    private  Map<String, Object> debugApplication = Maps.newHashMap();
+
+
     @Override
     public int doStartTag() throws JspException {
-        String debugJsp = System.getProperty(DEBUG_JSP_FLAG);
 
-        if (debugJsp != null && Boolean.parseBoolean(debugJsp)) {
+        boolean debugOk = DEBUG_FLAG;
+         if (debugOk) {
+            outputDebugModelInJSON();
+           }
 
+        return SKIP_BODY;
+    }
+
+    protected void outputDebugModelInJSON() throws JspException {
+            
             JspWriter out = pageContext.getOut();
-
-            List<Integer> pageContextScope = Lists.newArrayList(
-                    Arrays.asList(PageContext.SESSION_SCOPE, PageContext.REQUEST_SCOPE, PageContext.APPLICATION_SCOPE));
 
             try {
                 out.println(SCRIPT_TYPE_TEXT_JAVASCRIPT_START);
-                for (Integer scope : pageContextScope) {
+                for (Integer scope : SCOPES) {
                     Enumeration attributeNames = pageContext.getAttributeNamesInScope(scope);
 
-                    while (attributeNames.hasMoreElements()) {
+                    while (attributeNames!= null && attributeNames.hasMoreElements()) {
                         String element = attributeNames.nextElement().toString();
-                        Object attribute;
-                        String packagesToExclude = pageContext.getServletContext()
-                                .getInitParameter("webdebug.excludes");
-                        List<String> tokenToFilter = Arrays.asList(packagesToExclude.split(","));
+                        Object attribute = null;
+                        String packagesToExclude = pageContext.getServletContext().getInitParameter(WEBDEBUG_EXCLUDES);
+                        List<String> tokenToFilter = Lists.newArrayList();
+                        if(packagesToExclude!=null){
+                        tokenToFilter = Arrays.asList(packagesToExclude.split(EXCLUDE_PACKAGE_SEPARATOR));
+                        }
 
-                        if (element != null && ignoredPackage(element, tokenToFilter)) {
+                        if (element != null && !ignoredPackage(element, tokenToFilter)) {
 
-                            if (scope == PageContext.REQUEST_SCOPE) {
+                            if (scope == PageContext.PAGE_SCOPE) {
+                                attribute = pageContext.getAttribute(element);
+                                if (attribute != null) {
+                                    addAttributeToMap(element, attribute, debugPage);
+                                }
+                            }else if (scope == PageContext.REQUEST_SCOPE) {
                                 attribute = pageContext.getRequest().getAttribute(element);
                                 if (attribute != null) {
                                     addAttributeToMap(element, attribute, debugRequest);
                                 }
                             } else if (scope == PageContext.SESSION_SCOPE) {
-                                attribute = pageContext.getSession().getAttribute(element);
+                                final HttpSession session = pageContext.getSession();
+                                if (session != null) {
+                                attribute = session.getAttribute(element);
+                                }
                                 if (attribute != null) {
                                     addAttributeToMap(element, attribute, debugSession);
                                 }
                             } else if (scope == PageContext.APPLICATION_SCOPE) {
-                                attribute = pageContext.getSession().getAttribute(element);
+                                attribute = pageContext.getServletContext().getAttribute(element);
                                 if (attribute != null) {
                                     addAttributeToMap(element, attribute, debugApplication);
                                 }
@@ -96,40 +136,31 @@ public class DebugModelTag extends TagSupport {
                     }
                 }
 
-                debugModel.put("session", debugSession);
-                debugModel.put("request", debugRequest);
-                debugModel.put("application", debugApplication);
+                debugModel.put(PAGE_REQUEST_KEY, debugPage);
+                debugModel.put(REQUEST_MODEL_KEY, debugRequest);
+                debugModel.put(SESSION_MODEL_KEY, debugSession);
+                debugModel.put(APPLICATION_MODEL_KEY, debugApplication);
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-                String debugModelAsJSON =null;
-                try{
-                 debugModelAsJSON = objectMapper.writeValueAsString(debugModel);
-                }catch(Throwable t){
-                    LOGGER.error("error in debugModel serialization in JSON",t);
+                String debugModelAsJSON = null;
+                try {
+                    debugModelAsJSON = objectMapper.writeValueAsString(debugModel);
+                } catch (Throwable t) {
+                    LOGGER.error("error in debugModel serialization in JSON", t);
                 }
-                out.println(VAR + VAR_JS_ATTRIBUTE_VIEWER + " = " +
-                        Objects.firstNonNull(debugModelAsJSON,"null").replaceAll(SINGLE_QUOTE, EMPTY) + ";");
-                out.println("(typeof console === \"undefined\")? {} : console.dir(" + VAR_JS_ATTRIBUTE_VIEWER + ");");
-                out.println(SCRIPT_END);
+                outputModelInJSON(out, debugModelAsJSON);
             } catch (IOException e) {
                 throw new JspException("IOException while writing data to page" + e.getMessage(), e);
             }
-        }
 
-        return SKIP_BODY;
     }
 
-    private boolean ignoredPackage(final String element, final List<String> tokenToFilter) {
-        boolean isIgnored = false;
-        for (String packageIgnored : tokenToFilter) {
-            if (isIgnored) {
-                return !isIgnored;
-            }
-            isIgnored = element.startsWith(packageIgnored);
-        }
-
-        return !isIgnored;
+    private void outputModelInJSON(final JspWriter out, final String debugModelAsJSON) throws IOException {
+        out.println(VAR + VAR_JS_ATTRIBUTE_VIEWER + " = " +
+                Objects.firstNonNull(debugModelAsJSON, "null").replaceAll(SINGLE_QUOTE, EMPTY) + ";");
+        out.println("(typeof console === \"undefined\")? {} : console.dir(" + VAR_JS_ATTRIBUTE_VIEWER + ");");
+        out.println(SCRIPT_END);
     }
 
     private void addAttributeToMap(final String element, final Object attribute, Map<String, Object> map) {
@@ -138,5 +169,17 @@ public class DebugModelTag extends TagSupport {
         } else {
             map.put(element, attribute);
         }
+    }
+
+    private boolean ignoredPackage(final String element, final List<String> tokenToFilter) {
+        boolean isIgnored = false;
+        for (String packageIgnored : tokenToFilter) {
+            if (isIgnored) {
+                return isIgnored;
+            }
+            isIgnored = element.startsWith(packageIgnored);
+        }
+
+        return isIgnored;
     }
 }
