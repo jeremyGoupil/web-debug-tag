@@ -13,7 +13,7 @@ Tag dumping attributes of session, requests and application into console like fi
    <dependency>
       <groupId>fr.figarocms</group>
       <artifactId>web-debug-tag</artifactId>
-      <version>0.0.16</version>
+      <version>1.0</version>
    </dependency>
 
 ```
@@ -29,11 +29,12 @@ Tag dumping attributes of session, requests and application into console like fi
 ### FILTER PARAM            
 
 ```
+    Be carefull with spring or sitemesh
 
 - Add in your web.xml, min 1 filter.
    <context-param>
       <param-name>webdebug.excludes</param-name>
-      <param-value>org.,com.</param-value>
+      <param-value>org.,com.,__spring,__sitemesh</param-value>
    </context-param> 
   
 
