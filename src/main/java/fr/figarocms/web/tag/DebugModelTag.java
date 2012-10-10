@@ -17,9 +17,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.util.HtmlUtils;
 
 public class DebugModelTag extends TagSupport {
     private static final long serialVersionUID = 4611181048692549740L;
@@ -167,7 +167,7 @@ public class DebugModelTag extends TagSupport {
 
     private void addAttributeToMap(final String element, final Object attribute, Map<String, Object> map) {
         if (attribute.getClass().getCanonicalName().equals(STRING_CLASS_NAME)) {
-            map.put(element, HtmlUtils.htmlEscape(attribute.toString()));
+            map.put(element, StringEscapeUtils.escapeHtml(attribute.toString()));
         } else {
             map.put(element, attribute);
         }
