@@ -1,4 +1,5 @@
 #README
+[![Build Status](https://travis-ci.org/jeremyGoupil/web-debug-tag.png?branch=master)](https://travis-ci.org/jeremyGoupil/web-debug-tag)
 
 Tag dumping attributes of session, requests and application into console like firebug.
 
